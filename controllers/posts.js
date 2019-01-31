@@ -1,6 +1,23 @@
 const Post = require('../models/post');
 
 module.exports = (server) => {
+
+  // Index
+  server.get('/', (req, res) => {
+    Post.find({})
+    .then(posts => {
+      res.render("posts-index", { posts });
+    })
+    .catch(err => {
+      console.log(err.message);
+    });
+  })
+
+  // New
+  server.get('/posts/new', (req, res) => {
+    res.render('posts-new', {});
+  })
+
   // Create
   server.post('/posts/new', (req, res) => {
     // Instantiate instance of post model
