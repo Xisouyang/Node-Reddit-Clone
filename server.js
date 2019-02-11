@@ -21,3 +21,5 @@ require('./controllers/posts.js')(server);
 server.listen(4000, () => {
   console.log("listening on port 4000")
 })
+
+module.exports = server;
