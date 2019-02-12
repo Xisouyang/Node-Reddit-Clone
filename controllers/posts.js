@@ -31,7 +31,7 @@ module.exports = (server) => {
   // Show
   server.get('/posts/:id', function(req, res) {
     // Look up post
-    Post.findById(req.params.id)
+    Post.findById(req.params.id).populate('comments')
       .then(post => {
         res.render('posts-show', { post })
       })

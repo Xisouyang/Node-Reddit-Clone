@@ -17,6 +17,7 @@ server.use(expressValidator());
 
 require('./data/reddit-db');
 require('./controllers/posts.js')(server);
+require('./controllers/comments.js')(server);
 
 server.listen(4000, () => {
   console.log("listening on port 4000")
