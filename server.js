@@ -31,7 +31,6 @@ var checkAuth = (req, res, next) => {
   }
   next();
 };
-console.log('test')
 server.use(express.static('public'))
 server.use(checkAuth);
 
