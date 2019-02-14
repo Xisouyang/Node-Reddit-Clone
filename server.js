@@ -2,10 +2,8 @@ require('dotenv').config();
 
 const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
-
 var cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-
 const express = require('express');
 const server = express();
 var exphbs = require('express-handlebars');
@@ -21,7 +19,6 @@ server.use(bodyParser.urlencoded({ extended: false }));
 
 // Add after body parser initialization!
 server.use(expressValidator());
-
 var checkAuth = (req, res, next) => {
   console.log("Checking authentication");
   if (typeof req.cookies.nToken === "undefined" || req.cookies.nToken === null) {
@@ -32,11 +29,10 @@ var checkAuth = (req, res, next) => {
     console.log(decodedToken)
     req.user = decodedToken.payload;
   }
-
   next();
 };
 
-
+server.use(express.static('public'))
 server.use(checkAuth);
 
 require('./data/reddit-db');

@@ -12,7 +12,7 @@ var checkUser = (req, res, next) => {
 module.exports = (server) => {
 
   // Index
-  server.get('/', (req, res) => {
+  server.get('/', function(req, res) {
     var currentUser = req.user;
     Post.find().populate('author')
     .then(posts => {
@@ -24,15 +24,19 @@ module.exports = (server) => {
   })
 
   // New
-  server.get('/posts/new', checkUser, (req, res) => {
+  server.get('/posts/new', checkUser, function(req, res) {
       var currentUser = req.user;
       res.render('posts-new', {currentUser});
   })
 
   // Create
-  server.post('/posts/new', checkUser, (req, res) => {
+  server.post('/posts/new', checkUser, function(req, res) {
       // Instantiate instance of post model
       const post = new Post(req.body);
+      post.author = req.user._id;
+      post.upVotes = [];
+      post.downVotes = [];
+      post.voteScore = 0;
       post.author = req.user._id;
       post.save()
            .then(post => {
@@ -73,5 +77,28 @@ module.exports = (server) => {
       .catch(err => {
         console.log(err);
       });
+  });
+  // Vote up
+  server.put("/posts/:id/vote-up", function(req, res) {
+    Post.findById(req.params.id).exec(function(err, post) {
+      post.upVotes.push(req.user._id);
+      console.log("HERE")
+      console.log(post.voteScore)
+      console.log("HERE")
+      post.voteScore = post.voteScore + 1;
+      post.save();
+
+      res.status(200);
+    });
+  });
+  // Vote down
+  server.put("/posts/:id/vote-down", function(req, res) {
+    Post.findById(req.params.id).exec(function(err, post) {
+      post.downVotes.push(req.user._id);
+      post.voteScore = post.voteScore - 1;
+      post.save();
+
+      res.status(200);
+    });
   });
 };
