@@ -4,11 +4,14 @@ const app = require("./../server")
 const chai = require("chai")
 const chaiHttp = require("chai-http")
 const expect = chai.expect;
+const agent = chai.request.agent(app);
 
 // Import Post model from our models folder
 // so we can use it in our tests
 const Post = require('../models/post');
+const User = require('../models/user')
 const server = require('../server');
+
 
 chai.should();
 chai.use(chaiHttp);
@@ -19,8 +22,28 @@ describe('Posts', function() {
   const samplePost = {
     title: 'post title',
     url: 'https://www.google.com',
-    summary: 'post summary'
+    summary: 'post summary',
+    subreddit: 'ladida'
   };
+
+  const user = {
+    username: 'poststest',
+    password: 'testposts'
+  };
+
+  before(function (done) {
+    agent
+      .post('/sign-up')
+      .set("content-type", "application/x-www-form-urlencoded")
+      .send(user)
+      .then(function (res) {
+        done();
+      })
+      .catch(function (err) {
+        done(err);
+      });
+  });
+
   it('should create new post w/ valid attributes in /posts/new', function(done) {
     // TODO: Test code goes here
 
@@ -32,8 +55,7 @@ describe('Posts', function() {
     // Checks how many posts are in there now
     Post.estimatedDocumentCount()
     .then(function (initialDocCount) {
-      chai
-        .request(app)
+      agent
         .post("/posts/new")
         // Fake form post, not actually filling out form
         .set("content-type", "application/x-www-form-urlencoded")
@@ -61,7 +83,23 @@ describe('Posts', function() {
     });
   });
 
-  after(function () {
-    Post.findOneAndDelete(samplePost);
+  after(function (done) {
+    Post.findOneAndDelete(samplePost)
+      .then(function (res) {
+          agent.close()
+
+          User.findOneAndDelete({
+              username: user.username
+          })
+            .then(function (res) {
+                done()
+            })
+            .catch(function (err) {
+                done(err);
+            });
+      })
+      .catch(function (err) {
+          done(err);
+      });
   });
 });
