@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 module.exports = (server) => {
   // Sign-up form
   server.get("/sign-up", (req, res) => {
-    res.render("sign-up");
+    var currentUser = req.user;
+    res.render("sign-up", { currentUser });
   });
 
   // SIGN UP POST
@@ -25,7 +26,8 @@ module.exports = (server) => {
 
   // Login form
   server.get("/login", (req, res) => {
-    res.render("login");
+    var currentUser = req.user;
+    res.render("login", { currentUser });
   });
 
   // LOGIN

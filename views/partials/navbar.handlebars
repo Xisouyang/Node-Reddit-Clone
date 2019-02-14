@@ -5,12 +5,15 @@
       <!-- title -->
         <span class="navbar-brand text-primary mb-0 h1">Reddit.js</span>
       <!-- button -->
-        <a href="/posts/new" class="navbar-btn mr-auto">New Post</a>
         <ul class="nav navbar-nav">
+        {{#if currentUser}}
+          <li><a href="/posts/new" class="navbar-btn">New Post</a><li>
           <li><a href="/logout">Logout</a></li>
-          <li><a href="/login">Login</a></li>
-          <li><a href="/sign-up">Sign Up</a></li>
-        </ul>
+        {{else}}
+            <li><a href="/login">Login</a></li>
+            <li><a href="/sign-up">Sign Up</a></li>
+        {{/if}}
+      </ul>
     </div>
   </div>
 </nav>
