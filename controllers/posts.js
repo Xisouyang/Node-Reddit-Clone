@@ -2,7 +2,7 @@ const Post = require('../models/post');
 const User = require('../models/user');
 
 var checkUser = (req, res, next) => {
-  console.log("checking user")
+  // console.log("checking user")
   if (req.user) {
     return next();
   }
@@ -56,7 +56,7 @@ module.exports = (server) => {
   // Show
   server.get('/posts/:id', function(req, res) {
     var currentUser = req.user;
-    console.log(currentUser)
+    // console.log(currentUser)
     // Look up post
     // Post.findById(req.params.id).populate({path: 'comments', populate: {path: 'author'}}).populate('author')
     Post.findById(req.params.id).populate('comments').lean()
@@ -84,9 +84,9 @@ module.exports = (server) => {
   server.put("/posts/:id/vote-up", function(req, res) {
     Post.findById(req.params.id).exec(function(err, post) {
       post.upVotes.push(req.user._id);
-      console.log("HERE")
-      console.log(post.voteScore)
-      console.log("HERE")
+      // console.log("HERE")
+      // console.log(post.voteScore)
+      // console.log("HERE")
       post.voteScore = post.voteScore + 1;
       post.save();
 

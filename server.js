@@ -20,13 +20,13 @@ server.use(bodyParser.urlencoded({ extended: false }));
 // Add after body parser initialization!
 server.use(expressValidator());
 var checkAuth = (req, res, next) => {
-  console.log("Checking authentication");
+  // console.log("Checking authentication");
   if (typeof req.cookies.nToken === "undefined" || req.cookies.nToken === null) {
     req.user = null;
   } else {
     var token = req.cookies.nToken;
     var decodedToken = jwt.decode(token, { complete: true }) || {};
-    console.log(decodedToken)
+    // console.log(decodedToken)
     req.user = decodedToken.payload;
   }
   next();
@@ -39,6 +39,7 @@ require('./data/reddit-db');
 require('./controllers/posts.js')(server);
 require('./controllers/comments.js')(server);
 require('./controllers/auth.js')(server);
+require('./controllers/replies.js')(server);
 
 
 server.listen(4000, () => {

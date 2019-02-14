@@ -2,7 +2,7 @@ const Comment = require('../models/comment');
 const Post = require('../models/post')
 
 var checkUser = (req, res, next) => {
-  console.log("checking user")
+  // console.log("checking user")
   if (req.user) {
     return next();
   }
