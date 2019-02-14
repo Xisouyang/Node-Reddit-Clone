@@ -1,4 +1,5 @@
 const Post = require('../models/post');
+const User = require('../models/user');
 
 var checkUser = (req, res, next) => {
   console.log("checking user")
@@ -13,9 +14,8 @@ module.exports = (server) => {
   // Index
   server.get('/', (req, res) => {
     var currentUser = req.user;
-    Post.find({})
+    Post.find().populate('author')
     .then(posts => {
-      console.log(currentUser)
       res.render("posts-index", { posts, currentUser });
     })
     .catch(err => {
@@ -31,23 +31,30 @@ module.exports = (server) => {
 
   // Create
   server.post('/posts/new', checkUser, (req, res) => {
-    if (req.user) {
       // Instantiate instance of post model
       const post = new Post(req.body);
-      // Save instance to DB
-      post.save((err, post) => {
-        return res.redirect(`/`)
-      })
-    } else {
-      return res.status(401);
-    }
+      post.author = req.user._id;
+      post.save()
+           .then(post => {
+               return User.findById(req.user._id);
+           })
+           .then(user => {
+               user.posts.unshift(post);
+               user.save();
+               // REDIRECT TO THE NEW POST
+               res.redirect(`/posts/${post._id}`);
+           })
+           .catch(err => {
+               console.log(err.message);
+           });
   });
 
   // Show
   server.get('/posts/:id', function(req, res) {
     var currentUser = req.user;
+    console.log(currentUser)
     // Look up post
-    Post.findById(req.params.id).populate('comments')
+    Post.findById(req.params.id).populate('comments').populate('author')
       .then(post => {
         res.render('posts-show', { post, currentUser })
       })
@@ -59,7 +66,7 @@ module.exports = (server) => {
   // Subreddit
   server.get("/n/:subreddit", function(req, res) {
     var currentUser = req.user;
-    Post.find({ subreddit: req.params.subreddit })
+    Post.find({ subreddit: req.params.subreddit }).populate('author')
       .then(posts => {
         res.render("posts-index", { posts, currentUser });
       })
